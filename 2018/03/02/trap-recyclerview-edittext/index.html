@@ -102,7 +102,7 @@
 <meta property="og:site_name" content="Write down &amp; Think hard">
 <meta property="og:description" content="背景介绍使用RecyclerView实现富文本编辑器，包含三种ItemType，分别是Text、Todo和Image。由于输入需要，每种item都有EditText，而RecyclerView在滚动的过程中，会将ItemView移除，并再次attach，这个过程会造成ItemView的焦点丢失，因此需要记录焦点所在的因此需要记录焦点所在的position，当该pisition重新显示在屏幕上时，为">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-03-29T03:46:56.288Z">
+<meta property="og:updated_time" content="2018-03-29T06:41:16.174Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="【坑】RecyclerView与EditText">
 <meta name="twitter:description" content="背景介绍使用RecyclerView实现富文本编辑器，包含三种ItemType，分别是Text、Todo和Image。由于输入需要，每种item都有EditText，而RecyclerView在滚动的过程中，会将ItemView移除，并再次attach，这个过程会造成ItemView的焦点丢失，因此需要记录焦点所在的因此需要记录焦点所在的position，当该pisition重新显示在屏幕上时，为">
@@ -211,12 +211,12 @@
         </li>
       
         
-        <li class="menu-item menu-item-archives">
-          <a href="/archives/" rel="section">
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
             
-            归档
+            分类
           </a>
         </li>
       
@@ -302,6 +302,28 @@
             
           </span>
 
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -467,7 +489,7 @@
 
           
             <div class="site-state-item site-state-posts">
-              <a href="/archives/">
+              <a href="/">
                 <span class="site-state-item-count">4</span>
                 <span class="site-state-item-name">日志</span>
               </a>
@@ -475,13 +497,22 @@
           
 
           
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
 
           
             
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-count">3</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
