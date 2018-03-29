@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="总结," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/avatar.jpg?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="“A small leak will sink a great ship.” - Benjamin Franklin 【目录】  离线配置 下载离线aar包及依赖文件 加入项目中 编辑gradle文件   源码分析 判断是否泄露 查找最短强引用路径   附录">
+<meta name="keywords" content="总结">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LeakCanary 解析">
+<meta property="og:url" content="http://yoursite.com/2018/03/29/LeakCanary/index.html">
+<meta property="og:site_name" content="Write down &amp; Think hard">
+<meta property="og:description" content="“A small leak will sink a great ship.” - Benjamin Franklin 【目录】  离线配置 下载离线aar包及依赖文件 加入项目中 编辑gradle文件   源码分析 判断是否泄露 查找最短强引用路径   附录">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2018/03/29/LeakCanary/%E7%9B%91%E8%A7%86%E6%97%B6%E5%BA%8F%E5%9B%BE.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/03/29/LeakCanary/%E6%9C%80%E7%9F%AD%E5%BC%95%E7%94%A8%E9%93%BE%E6%9F%A5%E6%89%BE.png">
+<meta property="og:updated_time" content="2018-03-29T03:22:30.277Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="LeakCanary 解析">
+<meta name="twitter:description" content="“A small leak will sink a great ship.” - Benjamin Franklin 【目录】  离线配置 下载离线aar包及依赖文件 加入项目中 编辑gradle文件   源码分析 判断是否泄露 查找最短强引用路径   附录">
+<meta name="twitter:image" content="http://yoursite.com/2018/03/29/LeakCanary/%E7%9B%91%E8%A7%86%E6%97%B6%E5%BA%8F%E5%9B%BE.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"hide","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/03/29/LeakCanary/"/>
+
+
+
+
+
+  <title>LeakCanary 解析 | Write down & Think hard</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Write down & Think hard</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/29/LeakCanary/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Deng Xinliang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Write down & Think hard">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">LeakCanary 解析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-29T10:57:25+08:00">
+                2018-03-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><strong><em>“A small leak will sink a great ship.”</em></strong> - Benjamin Franklin</p>
+<p>【目录】</p>
+<ul>
+<li><a href="#离线配置">离线配置</a><ul>
+<li><a href="#下载离线aar包及依赖文件">下载离线aar包及依赖文件</a></li>
+<li><a href="#加入项目中">加入项目中</a></li>
+<li><a href="#编辑gradle文件">编辑gradle文件</a></li>
+</ul>
+</li>
+<li><a href="#源码分析">源码分析</a><ul>
+<li><a href="#判断是否泄露">判断是否泄露</a></li>
+<li><a href="#查找最短强引用路径">查找最短强引用路径</a></li>
+</ul>
+</li>
+<li><a href="#附录">附录</a></li>
+</ul>
+<a id="more"></a>
+<h2 id="离线配置"><a href="#离线配置" class="headerlink" title="离线配置"></a>离线配置</h2><blockquote>
+<p>在线配置根据<a href="https://github.com/square/leakcanary/blob/master/README.md" target="_blank" rel="noopener">LeakCanary Github</a>上的指引即可完成。不过因为公司一些网络上的限制，我只能使用离线配置来引入LeakCanary。</p>
+</blockquote>
+<h3 id="下载离线aar包及依赖文件"><a href="#下载离线aar包及依赖文件" class="headerlink" title="下载离线aar包及依赖文件"></a>下载离线aar包及依赖文件</h3><p>首先从Maven上下载LeakCanary的aar包以及依赖的jar包，共有以下五个文件：</p>
+<ul>
+<li><a href="http://mvnrepository.com/artifact/com.squareup.leakcanary/leakcanary-android" target="_blank" rel="noopener">leakcanary-android.aar</a></li>
+<li><a href="http://mvnrepository.com/artifact/com.squareup.leakcanary/leakcanary-watcher" target="_blank" rel="noopener">leakcanary-watcher.jar</a></li>
+<li><a href="http://mvnrepository.com/artifact/com.squareup.leakcanary/leakcanary-analyzer" target="_blank" rel="noopener">leakcanary-analyzer.jar</a></li>
+<li><a href="http://mvnrepository.com/artifact/com.squareup.leakcanary/leakcanary-android-no-op" target="_blank" rel="noopener">leakcanary-android-no-op.aar</a></li>
+<li><a href="http://mvnrepository.com/artifact/com.squareup.haha/haha" target="_blank" rel="noopener">haha.jar</a></li>
+</ul>
+<h3 id="加入项目中"><a href="#加入项目中" class="headerlink" title="加入项目中"></a>加入项目中</h3><p>在工程中建立一个目录，可以跟<code>src</code>、<code>res</code>等目录同级，比如<code>YourProject/leakcanary/</code>，然后将上述五个文件放到此目录下。</p>
+<h3 id="编辑gradle文件"><a href="#编辑gradle文件" class="headerlink" title="编辑gradle文件"></a>编辑gradle文件</h3><p>在Module的<code>build.gradle</code>中加入以下代码：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">repositories</span> &#123;</span><br><span class="line">  <span class="keyword">flatDir</span> &#123;</span><br><span class="line">    <span class="comment">// 这个路径就是上一步中建立的文件夹的相对路径</span></span><br><span class="line">    dirs <span class="string">'leakcanary'</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">dependencies</span> &#123;</span><br><span class="line">  debugCompile <span class="keyword">fileTree</span>(dir: <span class="string">'leakcanary'</span>, <span class="keyword">include</span>: <span class="string">'*.jar'</span>)</span><br><span class="line">  <span class="comment">// 以下两句的name是指文件名，具体名称视你的文件名而定。</span></span><br><span class="line">  debugCompile (name: <span class="string">'com.squareup.leakcanary-android'</span>, ext: <span class="string">'aar'</span>)</span><br><span class="line">  releaseCompile (name: <span class="string">'com.squareup.leakcanary-android-no-op'</span>, ext: <span class="string">'aar'</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h2><blockquote>
+<p>对 LeakCanary 的源码进行分析。</p>
+</blockquote>
+<h3 id="判断是否泄露"><a href="#判断是否泄露" class="headerlink" title="判断是否泄露"></a>判断是否泄露</h3><p>先上一张时序图：</p>
+<p><img src="%E7%9B%91%E8%A7%86%E6%97%B6%E5%BA%8F%E5%9B%BE.jpg" alt="SequenceDiagram"><br>其关键代码片段如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** RefWatcher.java */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/** 当我们要监视一个对象是否存在泄露时，会调用这个方法 */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">watch</span><span class="params">(Object watchedReference)</span> </span>&#123;</span><br><span class="line">  watch(watchedReference, <span class="string">""</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">watch</span><span class="params">(Object watchedReference, String referenceName)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="comment">// 随机生成一个key，保证key的唯一性</span></span><br><span class="line">  String key = UUID.randomUUID().toString();</span><br><span class="line">  <span class="comment">// 将key保存在 Set 中</span></span><br><span class="line">  retainedKeys.add(key);</span><br><span class="line">  <span class="comment">// 创建WeakReference，key是联系 reference 对象和 retainedKeys 的纽带</span></span><br><span class="line">  <span class="keyword">final</span> KeyedWeakReference reference =</span><br><span class="line">      <span class="keyword">new</span> KeyedWeakReference(watchedReference, key, referenceName, queue);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 异步判断对象是否存在泄露</span></span><br><span class="line">  ensureGoneAsync(watchStartNanoTime, reference);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** 异步方法 */</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">ensureGoneAsync</span><span class="params">(<span class="keyword">final</span> <span class="keyword">long</span> watchStartNanoTime, <span class="keyword">final</span> KeyedWeakReference reference)</span> </span>&#123;</span><br><span class="line">  watchExecutor.execute(<span class="keyword">new</span> Retryable() &#123;</span><br><span class="line">    <span class="meta">@Override</span> <span class="keyword">public</span> Retryable.<span class="function">Result <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> ensureGone(reference, watchStartNanoTime);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** 检查是否存在泄漏 */</span></span><br><span class="line"><span class="meta">@SuppressWarnings</span>(<span class="string">"ReferenceEquality"</span>) <span class="comment">// Explicitly checking for named null.</span></span><br><span class="line">Retryable.<span class="function">Result <span class="title">ensureGone</span><span class="params">(<span class="keyword">final</span> KeyedWeakReference reference, <span class="keyword">final</span> <span class="keyword">long</span> watchStartNanoTime)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="comment">// 首先将已回收的对象对应的key从retainedKeys中移除</span></span><br><span class="line">  removeWeaklyReachableReferences();</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 如果正在debug断点调试，则延迟执行检查（因为断点会影响准确性）</span></span><br><span class="line">  <span class="keyword">if</span> (debuggerControl.isDebuggerAttached()) &#123;</span><br><span class="line">    <span class="comment">// The debugger can create false leaks.</span></span><br><span class="line">    <span class="keyword">return</span> RETRY;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 通过判断retainedKeys中是否还包含当前的key来判断当前对象是否被回收，</span></span><br><span class="line">  <span class="comment">// 如果已被回收，则返回DONE</span></span><br><span class="line">  <span class="keyword">if</span> (gone(reference)) &#123;</span><br><span class="line">    <span class="keyword">return</span> DONE;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 如果没有被回收，则触发一次GC</span></span><br><span class="line">  gcTrigger.runGc();</span><br><span class="line">  <span class="comment">// 再次将已回收的对象对应的key从retainedKeys中移除</span></span><br><span class="line">  removeWeaklyReachableReferences();</span><br><span class="line">  <span class="comment">// 再次判断是否被回收</span></span><br><span class="line">  <span class="comment">// 如果被回收则返回DONE，结束</span></span><br><span class="line">  <span class="comment">// 如果没有被回收，则需要查找造成泄漏的引用链中最短的一条（一个对象可能被多个对象引用，所以造成泄漏的地方可能不止一处）</span></span><br><span class="line">  <span class="keyword">if</span> (!gone(reference)) &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="comment">// 获取堆内存镜像文件，最终调用的是Debug#dumpHprofData(String)方法来获取内存镜像</span></span><br><span class="line">    File heapDumpFile = heapDumper.dumpHeap();</span><br><span class="line">    <span class="keyword">if</span> (heapDumpFile == RETRY_LATER) &#123;</span><br><span class="line">      <span class="comment">// Could not dump the heap.</span></span><br><span class="line">      <span class="keyword">return</span> RETRY;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">long</span> heapDumpDurationMs = NANOSECONDS.toMillis(System.nanoTime() - startDumpHeap);</span><br><span class="line">    <span class="comment">// 启动分析服务</span></span><br><span class="line">    heapdumpListener.analyze(</span><br><span class="line">        <span class="keyword">new</span> HeapDump(heapDumpFile, reference.key, reference.name, excludedRefs, watchDurationMs,</span><br><span class="line">            gcDurationMs, heapDumpDurationMs));</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> DONE;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">gone</span><span class="params">(KeyedWeakReference reference)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> !retainedKeys.contains(reference.key);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">removeWeaklyReachableReferences</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="comment">// WeakReferences are enqueued as soon as the object to which they point to becomes weakly</span></span><br><span class="line">  <span class="comment">// reachable. This is before finalization or garbage collection has actually happened.</span></span><br><span class="line">  KeyedWeakReference ref;</span><br><span class="line">  <span class="keyword">while</span> ((ref = (KeyedWeakReference) queue.poll()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">    retainedKeys.remove(ref.key);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="查找最短强引用路径"><a href="#查找最短强引用路径" class="headerlink" title="查找最短强引用路径"></a>查找最短强引用路径</h3><p>查找最短强引用路径的流程如下图：<br><img src="%E6%9C%80%E7%9F%AD%E5%BC%95%E7%94%A8%E9%93%BE%E6%9F%A5%E6%89%BE.png" alt="Shortest Strong Reference Path"></p>
+<p>首先来看一下分析服务是如何启动的：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** RefWatcher#ensureGone(KeyedWeakReference, long) */</span></span><br><span class="line"><span class="comment">// 启动分析服务</span></span><br><span class="line">heapdumpListener.analyze(</span><br><span class="line">    <span class="keyword">new</span> HeapDump(heapDumpFile, reference.key, reference.name, excludedRefs, watchDurationMs,</span><br><span class="line">        gcDurationMs, heapDumpDurationMs));</span><br></pre></td></tr></table></figure></p>
+<p>上述代码执行后，会调用<code>ServiceHeapDumpListener#analyze(HeapDump)</code>，继而调用<code>HeapAnalyzerService#runAnalysis(Context, HeapDump, Class&lt;? extends AbstractAnalysisResultService&gt;)</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">runAnalysis</span><span class="params">(Context context, HeapDump heapDump,</span></span></span><br><span class="line"><span class="function"><span class="params">    Class&lt;? extends AbstractAnalysisResultService&gt; listenerServiceClass)</span> </span>&#123;</span><br><span class="line">  Intent intent = <span class="keyword">new</span> Intent(context, HeapAnalyzerService.class);</span><br><span class="line">  intent.putExtra(LISTENER_CLASS_EXTRA, listenerServiceClass.getName());</span><br><span class="line">  intent.putExtra(HEAPDUMP_EXTRA, heapDump);</span><br><span class="line">  context.startService(intent);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>HeapAnalyzerService</code>是一个<code>IntentService</code>，来看一下它的<code>onHandleIntent</code>方法:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span> <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onHandleIntent</span><span class="params">(Intent intent)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  String listenerClassName = intent.getStringExtra(LISTENER_CLASS_EXTRA);</span><br><span class="line">  HeapDump heapDump = (HeapDump) intent.getSerializableExtra(HEAPDUMP_EXTRA);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 创建HeapAnalyzer</span></span><br><span class="line">  HeapAnalyzer heapAnalyzer = <span class="keyword">new</span> HeapAnalyzer(heapDump.excludedRefs);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 调用HeapAnalyzer分析内存泄露路径</span></span><br><span class="line">  AnalysisResult result = heapAnalyzer.checkForLeak(heapDump.heapDumpFile, heapDump.referenceKey);</span><br><span class="line">  <span class="comment">// 发送结果</span></span><br><span class="line">  AbstractAnalysisResultService.sendResultToListener(<span class="keyword">this</span>, listenerClassName, heapDump, result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong><code>HeapAnalyzer#checkForLeak(File, String)</code>是查找最短强引用路径的开端。</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 使用上文提到的使用UUID.randomUUID()方法生成的key来获取到泄露的对象实例，然后</span></span><br><span class="line"><span class="comment"> * 计算从该实例到达GC Roots的最短强引用路径</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> AnalysisResult <span class="title">checkForLeak</span><span class="params">(File heapDumpFile, String referenceKey)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    HprofBuffer buffer = <span class="keyword">new</span> MemoryMappedFileBuffer(heapDumpFile);</span><br><span class="line">    HprofParser parser = <span class="keyword">new</span> HprofParser(buffer);</span><br><span class="line">    Snapshot snapshot = parser.parse();</span><br><span class="line">    <span class="comment">// 从内存镜像中获取所有的GC Roots，并将它们添加到一个集合中</span></span><br><span class="line">    deduplicateGcRoots(snapshot);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 使用反射，通过key找到泄露的对象实例</span></span><br><span class="line">    Instance leakingRef = findLeakingReference(referenceKey, snapshot);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// False alarm, weak reference was cleared in between key check and heap dump.</span></span><br><span class="line">    <span class="keyword">if</span> (leakingRef == <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span> noLeak(since(analysisStartNanoTime));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 查找泄露路径</span></span><br><span class="line">    <span class="keyword">return</span> findLeakTrace(analysisStartNanoTime, snapshot, leakingRef);</span><br><span class="line">  &#125; <span class="keyword">catch</span> (Throwable e) &#123;</span><br><span class="line">    <span class="keyword">return</span> failure(e, since(analysisStartNanoTime));</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> AnalysisResult <span class="title">findLeakTrace</span><span class="params">(<span class="keyword">long</span> analysisStartNanoTime, Snapshot snapshot, Instance leakingRef)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// ShortestPathFinder类是查找最短强引用路径的核心</span></span><br><span class="line">  ShortestPathFinder pathFinder = <span class="keyword">new</span> ShortestPathFinder(excludedRefs);</span><br><span class="line">  ShortestPathFinder.Result result = pathFinder.findPath(snapshot, leakingRef);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 根据查找的结果，建立泄露路径</span></span><br><span class="line">  LeakTrace leakTrace = buildLeakTrace(result.leakingNode);</span><br><span class="line"></span><br><span class="line">  String className = leakingRef.getClassObj().getClassName();</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Side effect: computes retained size.</span></span><br><span class="line">  snapshot.computeDominators();</span><br><span class="line"></span><br><span class="line">  Instance leakingInstance = result.leakingNode.instance;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">long</span> retainedSize = leakingInstance.getTotalRetainedSize();</span><br><span class="line"></span><br><span class="line">  <span class="comment">// <span class="doctag">TODO:</span> check O sources and see what happened to android.graphics.Bitmap.mBuffer</span></span><br><span class="line">  <span class="keyword">if</span> (SDK_INT &lt;= N_MR1) &#123;</span><br><span class="line">    retainedSize += computeIgnoredBitmapRetainedSize(snapshot, leakingInstance);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> leakDetected(result.excludingKnownLeaks, className, leakTrace, retainedSize,</span><br><span class="line">      since(analysisStartNanoTime));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong><code>ShortestPathFinder#findPath(Snapshot, Instance)</code>查找最短强引用路径</strong>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Result <span class="title">findPath</span><span class="params">(Snapshot snapshot, Instance leakingRef)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="comment">// 将上面找到的所有GC Roots添加到队列中</span></span><br><span class="line">  enqueueGcRoots(snapshot);</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  LeakNode leakingNode = <span class="keyword">null</span>;</span><br><span class="line">  <span class="comment">// 如果将从GC Root开始的所有引用看做树，则这里就可以理解成使用广度优先搜索遍历引用“森林”</span></span><br><span class="line">  <span class="comment">// 如果将所有的引用都看做是长度为1的Edge，那么这些引用就组成了一幅有向图，</span></span><br><span class="line">  <span class="comment">// 这里就是使用类似Dijkstra算法的方法来寻找最短路径，越在队列后面的，距离GC Roots越远</span></span><br><span class="line">  <span class="keyword">while</span> (!toVisitQueue.isEmpty() || !toVisitIfNoPathQueue.isEmpty()) &#123;</span><br><span class="line">    LeakNode node;</span><br><span class="line">    <span class="comment">// 如果toVisitQueue中没有元素，则取toVisitIfNoPathQueue中的元素</span></span><br><span class="line">    <span class="comment">// 意思就是，如果遍历完了toVisitQueue还没有找到泄露的路径，那么就继续遍历设置了“例外”的那些对象</span></span><br><span class="line">    <span class="comment">// “例外”是什么情况？在后续两个方法会讲到。</span></span><br><span class="line">    <span class="keyword">if</span> (!toVisitQueue.isEmpty()) &#123;</span><br><span class="line">      node = toVisitQueue.poll();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      node = toVisitIfNoPathQueue.poll();</span><br><span class="line">      <span class="keyword">if</span> (node.exclusion == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Expected node to have an exclusion "</span> + node);</span><br><span class="line">      &#125;</span><br><span class="line">      excludingKnownLeaks = <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Termination</span></span><br><span class="line">    <span class="keyword">if</span> (node.instance == leakingRef) &#123;</span><br><span class="line">      leakingNode = node;</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 因为一个对象可以被多个对象引用，以GC Root为根的引用树</span></span><br><span class="line">    <span class="comment">// 并不是严格意义上的树，所以如果已经遍历过当前对象，就跳过</span></span><br><span class="line">    <span class="keyword">if</span> (checkSeen(node)) &#123;</span><br><span class="line">      <span class="keyword">continue</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下面是根据当前引用节点的类型，分别找到它们所引用的对象</span></span><br><span class="line">    <span class="keyword">if</span> (node.instance <span class="keyword">instanceof</span> RootObj) &#123;</span><br><span class="line">      visitRootObj(node);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (node.instance <span class="keyword">instanceof</span> ClassObj) &#123;</span><br><span class="line">      visitClassObj(node);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (node.instance <span class="keyword">instanceof</span> ClassInstance) &#123;</span><br><span class="line">      visitClassInstance(node);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (node.instance <span class="keyword">instanceof</span> ArrayInstance) &#123;</span><br><span class="line">      visitArrayInstance(node);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Unexpected type for "</span> + node.instance);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 返回查找结果</span></span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> Result(leakingNode, excludingKnownLeaks);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 以类对象为例，会找到当前实例的所有对象成员，将它们添加到队列中。</span></span><br><span class="line"><span class="comment"> * 至于其他对象的遍历，大家感兴趣的话可以自行研究。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">visitClassInstance</span><span class="params">(LeakNode node)</span> </span>&#123;</span><br><span class="line">  ClassInstance classInstance = (ClassInstance) node.instance;</span><br><span class="line">  Map&lt;String, Exclusion&gt; ignoredFields = <span class="keyword">new</span> LinkedHashMap&lt;&gt;();</span><br><span class="line">  ClassObj superClassObj = classInstance.getClassObj();</span><br><span class="line">  Exclusion classExclusion = <span class="keyword">null</span>;</span><br><span class="line">  <span class="comment">// 将设置了“例外”的对象记录下来</span></span><br><span class="line">  <span class="comment">// 这里的“例外”就是上一个方法中提到的“例外”。是指那些低优先级的，或者说几乎不可能引发内存泄露的对象</span></span><br><span class="line">  <span class="comment">// 例如SDK中的一些对象，诸如Message, InputMethodManager等，一般情况下，这些对象都不会导致内存泄露。</span></span><br><span class="line">  <span class="comment">// 因此只有在遍历了其他对象之后，找不到泄露路径的情况下，才遍历这些对象。</span></span><br><span class="line">  <span class="keyword">while</span> (superClassObj != <span class="keyword">null</span>) &#123;</span><br><span class="line">    Exclusion params = excludedRefs.classNames.get(superClassObj.getClassName());</span><br><span class="line">    <span class="keyword">if</span> (params != <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="comment">// true overrides null or false.</span></span><br><span class="line">      <span class="comment">// 如果当前类或者其父类被设置了“例外”，则将其赋值给classExclusion</span></span><br><span class="line">      <span class="keyword">if</span> (classExclusion == <span class="keyword">null</span> || !classExclusion.alwaysExclude) &#123;</span><br><span class="line">        classExclusion = params;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果当前类及其父类包含例外的成员，将这些成员添加到ignoredFields中</span></span><br><span class="line">    Map&lt;String, Exclusion&gt; classIgnoredFields =</span><br><span class="line">        excludedRefs.fieldNameByClassName.get(superClassObj.getClassName());</span><br><span class="line">    <span class="keyword">if</span> (classIgnoredFields != <span class="keyword">null</span>) &#123;</span><br><span class="line">      ignoredFields.putAll(classIgnoredFields);</span><br><span class="line">    &#125;</span><br><span class="line">    superClassObj = superClassObj.getSuperClassObj();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (classExclusion != <span class="keyword">null</span> &amp;&amp; classExclusion.alwaysExclude) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 遍历每一个成员</span></span><br><span class="line">  <span class="keyword">for</span> (ClassInstance.FieldValue fieldValue : classInstance.getValues()) &#123;</span><br><span class="line">    Exclusion fieldExclusion = classExclusion;</span><br><span class="line">    Field field = fieldValue.getField();</span><br><span class="line">    <span class="comment">// 如果成员不是对象，则忽略</span></span><br><span class="line">    <span class="keyword">if</span> (field.getType() != Type.OBJECT) &#123;</span><br><span class="line">      <span class="keyword">continue</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 获取成员实例</span></span><br><span class="line">    Instance child = (Instance) fieldValue.getValue();</span><br><span class="line">    String fieldName = field.getName();</span><br><span class="line">    Exclusion params = ignoredFields.get(fieldName);</span><br><span class="line">    <span class="comment">// 如果当前成员对象是例外的，并且当前类和所有父类都不是例外的（classExclusion = null），</span></span><br><span class="line">    <span class="comment">// 或，如果当前成员对象时例外的，而且是alwaysExclude，而且当前类和父类都不是alwaysExclude</span></span><br><span class="line">    <span class="comment">// 则认为当前成员是需要例外处理的。</span></span><br><span class="line">    <span class="comment">// 这个逻辑很绕，实际上“||”后面的判断是不需要的，具体在enqueue方法中讲。</span></span><br><span class="line">    <span class="keyword">if</span> (params != <span class="keyword">null</span> &amp;&amp; (fieldExclusion == <span class="keyword">null</span> || (params.alwaysExclude</span><br><span class="line">        &amp;&amp; !fieldExclusion.alwaysExclude))) &#123;</span><br><span class="line">      fieldExclusion = params;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 入队列</span></span><br><span class="line">    enqueue(fieldExclusion, node, child, fieldName, INSTANCE_FIELD);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">enqueue</span><span class="params">(Exclusion exclusion, LeakNode parent, Instance child, String referenceName,</span></span></span><br><span class="line"><span class="function"><span class="params">    LeakTraceElement.Type referenceType)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (child == <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (isPrimitiveOrWrapperArray(child) || isPrimitiveWrapper(child)) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// Whether we want to visit now or later, we should skip if this is already to visit.</span></span><br><span class="line">  <span class="keyword">if</span> (toVisitSet.contains(child)) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 这个exclusion就是上一个方法通过“很绕的”逻辑判断的出来的</span></span><br><span class="line">  <span class="comment">// 这里的作用就是如果为null则visitNow，这个boolean值在下面会用到。</span></span><br><span class="line">  <span class="comment">// 可以看到这里只是判断exclusion是否为null，并没有使用到alwaysExclude参数，</span></span><br><span class="line">  <span class="comment">// 所以说上一个方法中，“||”之后的判断是没有必要的。</span></span><br><span class="line">  <span class="keyword">boolean</span> visitNow = exclusion == <span class="keyword">null</span>;</span><br><span class="line">  <span class="keyword">if</span> (!visitNow &amp;&amp; toVisitIfNoPathSet.contains(child)) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (canIgnoreStrings &amp;&amp; isString(child)) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (visitedSet.contains(child)) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  LeakNode childNode = <span class="keyword">new</span> LeakNode(exclusion, child, parent, referenceName, referenceType);</span><br><span class="line">  <span class="comment">// 这里用到了boolean值visitNow，就是说如果exclusion对象为null，则表示这不是一个例外的对象（暂且称之为常规对象）；</span></span><br><span class="line">  <span class="comment">// 如果exclusion对象不为null，则表示这个对象是例外对象，只有在遍历所有常规对象之后，还是找不到路径的情况下才会被遍历。</span></span><br><span class="line">  <span class="keyword">if</span> (visitNow) &#123;</span><br><span class="line">    toVisitSet.add(child);</span><br><span class="line">    toVisitQueue.add(childNode);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    toVisitIfNoPathSet.add(child);</span><br><span class="line">    toVisitIfNoPathQueue.add(childNode);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>基本代码逻辑分析完毕。</p>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><h5 id="Q-LeakCanary为什么可以自动监视Activity？"><a href="#Q-LeakCanary为什么可以自动监视Activity？" class="headerlink" title="Q: LeakCanary为什么可以自动监视Activity？"></a>Q: LeakCanary为什么可以自动监视Activity？</h5><p>A: 答案在于<code>Application.ActivityLifecycleCallbacks</code>接口。具体可以查看<code>ActivityRefWatcher#watchActivities()</code>。</p>
+<h5 id="Q-LeakCanary是在onDestroy-方法中对Activity添加监视。因为onDestroy-方法执行后，Instrumentation或其他一些类并没有立即释放对该Activity的强引用，那么它怎么保证得到正确的结果？"><a href="#Q-LeakCanary是在onDestroy-方法中对Activity添加监视。因为onDestroy-方法执行后，Instrumentation或其他一些类并没有立即释放对该Activity的强引用，那么它怎么保证得到正确的结果？" class="headerlink" title="Q: LeakCanary是在onDestroy()方法中对Activity添加监视。因为onDestroy()方法执行后，Instrumentation或其他一些类并没有立即释放对该Activity的强引用，那么它怎么保证得到正确的结果？"></a>Q: LeakCanary是在onDestroy()方法中对Activity添加监视。因为onDestroy()方法执行后，Instrumentation或其他一些类并没有立即释放对该Activity的强引用，那么它怎么保证得到正确的结果？</h5><p>A: LeakCanary是“异步”调用<code>ensureGone()</code>方法的。这个异步利用了IDLEHandler的原理。具体代码可查看<code>AndroidWatchExecutor</code>类中的相关方法。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/总结/" rel="tag"># 总结</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/29/Android-ORM/" rel="next" title="GreenDao与Room对比以及Android SQLite API优化">
+                <i class="fa fa-chevron-left"></i> GreenDao与Room对比以及Android SQLite API优化
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="Deng Xinliang" />
+          <p class="site-author-name" itemprop="name">Deng Xinliang</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#离线配置"><span class="nav-number">1.</span> <span class="nav-text">离线配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#下载离线aar包及依赖文件"><span class="nav-number">1.1.</span> <span class="nav-text">下载离线aar包及依赖文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#加入项目中"><span class="nav-number">1.2.</span> <span class="nav-text">加入项目中</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编辑gradle文件"><span class="nav-number">1.3.</span> <span class="nav-text">编辑gradle文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#源码分析"><span class="nav-number">2.</span> <span class="nav-text">源码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#判断是否泄露"><span class="nav-number">2.1.</span> <span class="nav-text">判断是否泄露</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查找最短强引用路径"><span class="nav-number">2.2.</span> <span class="nav-text">查找最短强引用路径</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#附录"><span class="nav-number">3.</span> <span class="nav-text">附录</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Q-LeakCanary为什么可以自动监视Activity？"><span class="nav-number">3.0.0.1.</span> <span class="nav-text">Q: LeakCanary为什么可以自动监视Activity？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Q-LeakCanary是在onDestroy-方法中对Activity添加监视。因为onDestroy-方法执行后，Instrumentation或其他一些类并没有立即释放对该Activity的强引用，那么它怎么保证得到正确的结果？"><span class="nav-number">3.0.0.2.</span> <span class="nav-text">Q: LeakCanary是在onDestroy()方法中对Activity添加监视。因为onDestroy()方法执行后，Instrumentation或其他一些类并没有立即释放对该Activity的强引用，那么它怎么保证得到正确的结果？</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Deng Xinliang</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
