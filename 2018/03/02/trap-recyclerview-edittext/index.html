@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="坑," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/avatar.jpg?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="背景介绍使用RecyclerView实现富文本编辑器，包含三种ItemType，分别是Text、Todo和Image。由于输入需要，每种item都有EditText，而RecyclerView在滚动的过程中，会将ItemView移除，并再次attach，这个过程会造成ItemView的焦点丢失，因此需要记录焦点所在的因此需要记录焦点所在的position，当该pisition重新显示在屏幕上时，为">
+<meta name="keywords" content="坑">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【坑】RecyclerView与EditText">
+<meta property="og:url" content="http://yoursite.com/2018/03/02/trap-recyclerview-edittext/index.html">
+<meta property="og:site_name" content="Write down &amp; Think hard">
+<meta property="og:description" content="背景介绍使用RecyclerView实现富文本编辑器，包含三种ItemType，分别是Text、Todo和Image。由于输入需要，每种item都有EditText，而RecyclerView在滚动的过程中，会将ItemView移除，并再次attach，这个过程会造成ItemView的焦点丢失，因此需要记录焦点所在的因此需要记录焦点所在的position，当该pisition重新显示在屏幕上时，为">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-03-29T03:46:56.288Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="【坑】RecyclerView与EditText">
+<meta name="twitter:description" content="背景介绍使用RecyclerView实现富文本编辑器，包含三种ItemType，分别是Text、Todo和Image。由于输入需要，每种item都有EditText，而RecyclerView在滚动的过程中，会将ItemView移除，并再次attach，这个过程会造成ItemView的焦点丢失，因此需要记录焦点所在的因此需要记录焦点所在的position，当该pisition重新显示在屏幕上时，为">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"hide","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/03/02/trap-recyclerview-edittext/"/>
+
+
+
+
+
+  <title>【坑】RecyclerView与EditText | Write down & Think hard</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Write down & Think hard</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/02/trap-recyclerview-edittext/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Deng Xinliang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Write down & Think hard">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">【坑】RecyclerView与EditText</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-02T11:43:37+08:00">
+                2018-03-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="背景介绍"><a href="#背景介绍" class="headerlink" title="背景介绍"></a>背景介绍</h4><p>使用<code>RecyclerView</code>实现富文本编辑器，包含三种<code>ItemType</code>，分别是<code>Text</code>、<code>Todo</code>和<code>Image</code>。由于输入需要，每种item都有EditText，而RecyclerView在滚动的过程中，会将<code>ItemView</code>移除，并再次<code>attach</code>，这个过程会造成<code>ItemView</code>的焦点丢失，因此需要记录焦点所在的因此需要记录焦点所在的<code>position</code>，当该<code>pisition</code>重新显示在屏幕上时，为<code>ItemView</code>请求焦点。</p>
+<p>下面将列出在开发过程中遇到的难点和解决方案。</p>
+<a id="more"></a>
+<h3 id="1-长按无法呼出上下文操作菜单？"><a href="#1-长按无法呼出上下文操作菜单？" class="headerlink" title="1. 长按无法呼出上下文操作菜单？"></a>1. 长按无法呼出上下文操作菜单？</h3><h4 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h4><p>由于在onBindViewHolder时，会调用<code>EditText#setText(CharSequence)</code>方法，该方法会产生如下方法堆栈（调用关系为由上及下）：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> TextView#setText(CharSequence)</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> TextView#checkForRelayout()</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> TextView#makeNewLayout(int, int, BoringLayout.Metrics,</span></span><br><span class="line"><span class="comment"> *                             BoringLayout.Metrics, int, boolean)</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> Editor#prepareCursorControllers()</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure></p>
+<p>在<code>Editor#prepareCursorControllers()</code>会给决定能否呼出上下文操作菜单的变量<code>mInsertionControllerEnabled</code>、<code>mSelectionControllerEnabled</code>赋值。具体如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">prepareCursorControllers</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">boolean</span> windowSupportsHandles = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 在onBindViewHolder时，Item还没有添加到RecyclerView中，其RootView不是Window，</span></span><br><span class="line">    <span class="comment">// LayoutParams不是WindowManager.LayoutParams的实例，因此后续的两个变量都为false，</span></span><br><span class="line">    <span class="comment">// 导致长按无法呼出上下文操作菜单。</span></span><br><span class="line">    ViewGroup.LayoutParams params = mTextView.getRootView().getLayoutParams();</span><br><span class="line">    <span class="keyword">if</span> (params <span class="keyword">instanceof</span> WindowManager.LayoutParams) &#123;</span><br><span class="line">        WindowManager.LayoutParams windowParams = (WindowManager.LayoutParams) params;</span><br><span class="line">        windowSupportsHandles = windowParams.type &lt; WindowManager.LayoutParams.FIRST_SUB_WINDOW</span><br><span class="line">                || windowParams.type &gt; WindowManager.LayoutParams.LAST_SUB_WINDOW;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">boolean</span> enabled = windowSupportsHandles &amp;&amp; mTextView.getLayout() != <span class="keyword">null</span>;</span><br><span class="line">    mInsertionControllerEnabled = enabled &amp;&amp; isCursorVisible();</span><br><span class="line">    mSelectionControllerEnabled = enabled &amp;&amp; mTextView.textCanBeSelected();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!mInsertionControllerEnabled) &#123;</span><br><span class="line">        hideInsertionPointCursorController();</span><br><span class="line">        <span class="keyword">if</span> (mInsertionPointCursorController != <span class="keyword">null</span>) &#123;</span><br><span class="line">            mInsertionPointCursorController.onDetached();</span><br><span class="line">            mInsertionPointCursorController = <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!mSelectionControllerEnabled) &#123;</span><br><span class="line">        stopTextActionMode();</span><br><span class="line">        <span class="keyword">if</span> (mSelectionModifierCursorController != <span class="keyword">null</span>) &#123;</span><br><span class="line">            mSelectionModifierCursorController.onDetached();</span><br><span class="line">            mSelectionModifierCursorController = <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><p>在Item添加到RecyclerView中之后，再次调用<code>Editor#prepareCursorControllers()</code>方法。<br>因为该方法是包私有（<code>package-private</code>）方法，因此需要使用反射来调用。为了避免多次查找<code>Field</code>、<code>Method</code>的消耗，可以使用成员变量保存反射过程中找到的<code>Field</code>和<code>Method</code>。</p>
+<h3 id="2-输入框请求焦点导致滚动自动停止？"><a href="#2-输入框请求焦点导致滚动自动停止？" class="headerlink" title="2. 输入框请求焦点导致滚动自动停止？"></a><a id="2" href="#2" class="anchor" aria-hidden="true"></a>2. 输入框请求焦点导致滚动自动停止？</h3><h4 id="原因分析-1"><a href="#原因分析-1" class="headerlink" title="原因分析"></a>原因分析</h4><p>当一个拥有焦点的<code>position</code>离开并再次进入屏幕时，首先会为该<code>position</code>对应的<code>ItemView</code>请求焦点，接着会进行Layout，发生以下方法堆栈：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> ViewRootImpl#performTraversals()</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> ViewTreeObserver#dispatchOnPreDraw()</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> TextView#onPreDraw()</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> TextView#bringPointIntoView()</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+<p>看一下<code>TextView#bringPointIntoView()</code>方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">bringPointIntoView</span><span class="params">(<span class="keyword">int</span> offset)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 此处省略大量无关代码，此部分代码用于计算光标所在矩形的位置。</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (isFocused()) &#123;</span><br><span class="line">        <span class="comment">// This offsets because getInterestingRect() is in terms of viewport coordinates, but</span></span><br><span class="line">        <span class="comment">// requestRectangleOnScreen() is in terms of content coordinates.</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// The offsets here are to ensure the rectangle we are using is</span></span><br><span class="line">        <span class="comment">// within our view bounds, in case the cursor is on the far left</span></span><br><span class="line">        <span class="comment">// or right.  If it isn't withing the bounds, then this request</span></span><br><span class="line">        <span class="comment">// will be ignored.</span></span><br><span class="line">        <span class="keyword">if</span> (mTempRect == <span class="keyword">null</span>) mTempRect = <span class="keyword">new</span> Rect();</span><br><span class="line">        mTempRect.set(x - <span class="number">2</span>, top, x + <span class="number">2</span>, bottom);</span><br><span class="line">        getInterestingRect(mTempRect, line);</span><br><span class="line">        mTempRect.offset(mScrollX, mScrollY);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// requestRectangleOnScreen()方法会请求此View中的一个矩形显示在屏幕上</span></span><br><span class="line">        <span class="keyword">if</span> (requestRectangleOnScreen(mTempRect)) &#123;</span><br><span class="line">            changed = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> changed;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>View#requestRectangleOnScreen(Rect)</code>会遍历所有的父View并调用它们的<code>requestChildRectangleOnScreen</code>方法，整个方法会将子View指定的矩形区域显示到屏幕上。在<code>RecyclerView</code>中，该方法会调用<code>RecyclerView#smoothScrollBy(int, int)</code>方法触发滚动，这个方法会先取消之前的滚动，并开始此次滚动。</p>
+<h4 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h4><p>在用户滚动时，禁用请求显示child的功能。通过增加<code>onScrollListener</code>即可监听滚动状态的变化。如果滚动状态是<code>SCROLL_STATE_DRAGGING</code>，或者滚动状态从<code>SCROLL_STATE_DRAGGING</code>变化为<code>SCROLL_STATE_SETTLING</code>则表示用户触发了此次滚动（DRAGGING表示手指还未离开屏幕，DRAGGING之后的SETTLING表示手指离开屏幕但是尚在滚动）。</p>
+<h3 id="3-长item获取焦点后上下滚动？"><a href="#3-长item获取焦点后上下滚动？" class="headerlink" title="3. 长item获取焦点后上下滚动？"></a>3. 长item获取焦点后上下滚动？</h3><h4 id="原因分析-2"><a href="#原因分析-2" class="headerlink" title="原因分析"></a>原因分析</h4><p>一个十几页长的文本item，点击进入编辑状态时，其首选滚动到文本顶部，再滚动到点击的位置，并显示光标。通过分析代码，发现是子View获取焦点后，RecyclerView会滚动以将其显示在屏幕上。具体方法堆栈如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> View#requestFocus()</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> View#handleFocusGainInternal(int, Rect)</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> RecyclerView#requestChildFocus(View, View)</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> RecyclerView#requestChildOnScreen(View, View)</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure></p>
+<p>看一下<code>RecyclerView#requestChildOnScreen(View, View)</code>：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">requestChildOnScreen</span><span class="params">(@NonNull View child, @Nullable View focused)</span> </span>&#123;</span><br><span class="line">    View rectView = (focused != <span class="keyword">null</span>) ? focused : child;</span><br><span class="line">    mTempRect.set(<span class="number">0</span>, <span class="number">0</span>, rectView.getWidth(), rectView.getHeight());</span><br><span class="line"></span><br><span class="line">    <span class="comment">// get item decor offsets w/o refreshing. If they are invalid, there will be another</span></span><br><span class="line">    <span class="comment">// layout pass to fix them, then it is LayoutManager's responsibility to keep focused</span></span><br><span class="line">    <span class="comment">// View in viewport.</span></span><br><span class="line">    <span class="keyword">final</span> ViewGroup.LayoutParams focusedLayoutParams = rectView.getLayoutParams();</span><br><span class="line">    <span class="keyword">if</span> (focusedLayoutParams <span class="keyword">instanceof</span> LayoutParams) &#123;</span><br><span class="line">        <span class="comment">// if focused child has item decors, use them. Otherwise, ignore.</span></span><br><span class="line">        <span class="keyword">final</span> LayoutParams lp = (LayoutParams) focusedLayoutParams;</span><br><span class="line">        <span class="keyword">if</span> (!lp.mInsetsDirty) &#123;</span><br><span class="line">            <span class="keyword">final</span> Rect insets = lp.mDecorInsets;</span><br><span class="line">            mTempRect.left -= insets.left;</span><br><span class="line">            mTempRect.right += insets.right;</span><br><span class="line">            mTempRect.top -= insets.top;</span><br><span class="line">            mTempRect.bottom += insets.bottom;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (focused != <span class="keyword">null</span>) &#123;</span><br><span class="line">        offsetDescendantRectToMyCoords(focused, mTempRect);</span><br><span class="line">        offsetRectIntoDescendantCoords(child, mTempRect);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 可以知道mTempRect实际上是整个child所在的矩形。</span></span><br><span class="line">    mLayout.requestChildRectangleOnScreen(<span class="keyword">this</span>, child, mTempRect, !mFirstLayoutComplete,</span><br><span class="line">            (focused == <span class="keyword">null</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>将滚动的请求发送给<code>LayoutManager</code>，<code>LayoutManager</code>先计算出滚动的距离，然后执行滚动。来看一下具体过程：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">requestChildRectangleOnScreen</span><span class="params">(RecyclerView parent, View child, Rect rect,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">boolean</span> immediate,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">boolean</span> focusedChildVisible)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 计算需要滚动的距离</span></span><br><span class="line">    <span class="keyword">int</span>[] scrollAmount = getChildRectangleOnScreenScrollAmount(parent, child, rect,</span><br><span class="line">            immediate);</span><br><span class="line">    <span class="keyword">int</span> dx = scrollAmount[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">int</span> dy = scrollAmount[<span class="number">1</span>];</span><br><span class="line">    <span class="keyword">if</span> (!focusedChildVisible || isFocusedChildVisibleAfterScrolling(parent, dx, dy)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (dx != <span class="number">0</span> || dy != <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">// 执行滚动</span></span><br><span class="line">            <span class="keyword">if</span> (immediate) &#123;</span><br><span class="line">                parent.scrollBy(dx, dy);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                parent.smoothScrollBy(dx, dy);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span>[] getChildRectangleOnScreenScrollAmount(RecyclerView parent, View child,</span><br><span class="line">        Rect rect, <span class="keyword">boolean</span> immediate) &#123;</span><br><span class="line">    <span class="keyword">int</span>[] out = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">2</span>];</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> parentLeft = getPaddingLeft();</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> parentTop = getPaddingTop();</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> parentRight = getWidth() - getPaddingRight();</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> parentBottom = getHeight() - getPaddingBottom();</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> childLeft = child.getLeft() + rect.left - child.getScrollX();</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> childTop = child.getTop() + rect.top - child.getScrollY();</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> childRight = childLeft + rect.width();</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> childBottom = childTop + rect.height();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> offScreenLeft = Math.min(<span class="number">0</span>, childLeft - parentLeft);</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> offScreenTop = Math.min(<span class="number">0</span>, childTop - parentTop);</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> offScreenRight = Math.max(<span class="number">0</span>, childRight - parentRight);</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> offScreenBottom = Math.max(<span class="number">0</span>, childBottom - parentBottom);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 计算x轴方向滚动距离，与本次分析的问题关联不大。</span></span><br><span class="line">    <span class="comment">// Favor the "start" layout direction over the end when bringing one side or the other</span></span><br><span class="line">    <span class="comment">// of a large rect into view. If we decide to bring in end because start is already</span></span><br><span class="line">    <span class="comment">// visible, limit the scroll such that start won't go out of bounds.</span></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> dx;</span><br><span class="line">    <span class="keyword">if</span> (getLayoutDirection() == ViewCompat.LAYOUT_DIRECTION_RTL) &#123;</span><br><span class="line">        dx = offScreenRight != <span class="number">0</span> ? offScreenRight</span><br><span class="line">                : Math.max(offScreenLeft, childRight - parentRight);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        dx = offScreenLeft != <span class="number">0</span> ? offScreenLeft</span><br><span class="line">                : Math.min(childLeft - parentLeft, offScreenRight);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 计算y轴方向滚动距离，“优先于将child的顶部显示出来，而不是底部，如果顶部已经显示了，并且要滚动以显示底部，则需要保证顶部不会滚动到屏幕外”。</span></span><br><span class="line">    <span class="comment">// Favor bringing the top into view over the bottom. If top is already visible and</span></span><br><span class="line">    <span class="comment">// we should scroll to make bottom visible, make sure top does not go out of bounds.</span></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> dy = offScreenTop != <span class="number">0</span> ? offScreenTop</span><br><span class="line">            : Math.min(childTop - parentTop, offScreenBottom);</span><br><span class="line">    out[<span class="number">0</span>] = dx;</span><br><span class="line">    out[<span class="number">1</span>] = dy;</span><br><span class="line">    <span class="keyword">return</span> out;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上就是在进入编辑模式时，长item先往上滚动的原因。而往下滚动则与<a href="#2">第二个问题</a>一致。当<code>layout</code>执行完后，<code>TextView#onPreDraw()</code>会计算出光标所在的矩形，并请求父View显示此矩形，因此发生了向下滚动的过程。</p>
+<h4 id="解决方案-2"><a href="#解决方案-2" class="headerlink" title="解决方案"></a>解决方案</h4><p>当我们需要点击一个编辑项，进入编辑模式时，实际上光标位置一定不会是在屏幕在外。唯一存在的滚动需求是，当编辑项获取焦点后，输入法会弹出来，如果点击的位置在屏幕下方，就会被输入法遮挡，因此需要在重新<code>layout</code>之后滚动到光标位置，不存在将child顶部显示出来的需求。因此只需覆写<code>RecyclerView.LayoutManager#requestChildRectangleOnScreen(RecyclerView, View, Rect ,boolean)</code>方法，执行判断，如果y轴方向上滚动的距离为负数，则不滚动。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/坑/" rel="tag"># 坑</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/02/trap-relative-warpcontent/" rel="next" title="【坑】RelativeLayout与wrap_content">
+                <i class="fa fa-chevron-left"></i> 【坑】RelativeLayout与wrap_content
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/29/Android-ORM/" rel="prev" title="GreenDao与Room对比以及Android SQLite API优化">
+                GreenDao与Room对比以及Android SQLite API优化 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="Deng Xinliang" />
+          <p class="site-author-name" itemprop="name">Deng Xinliang</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#背景介绍"><span class="nav-number">1.</span> <span class="nav-text">背景介绍</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-长按无法呼出上下文操作菜单？"><span class="nav-number"></span> <span class="nav-text">1. 长按无法呼出上下文操作菜单？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#原因分析"><span class="nav-number">1.</span> <span class="nav-text">原因分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方案"><span class="nav-number">2.</span> <span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-输入框请求焦点导致滚动自动停止？"><span class="nav-number"></span> <span class="nav-text">2. 输入框请求焦点导致滚动自动停止？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#原因分析-1"><span class="nav-number">1.</span> <span class="nav-text">原因分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方案-1"><span class="nav-number">2.</span> <span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-长item获取焦点后上下滚动？"><span class="nav-number"></span> <span class="nav-text">3. 长item获取焦点后上下滚动？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#原因分析-2"><span class="nav-number">1.</span> <span class="nav-text">原因分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方案-2"><span class="nav-number">2.</span> <span class="nav-text">解决方案</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Deng Xinliang</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
