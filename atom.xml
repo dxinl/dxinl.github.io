@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2018-03-31T15:37:47.583Z</updated>
+  <updated>2018-04-01T07:50:53.443Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>LeetCode#136. Single Number</title>
+    <link href="http://yoursite.com/2018/04/01/Single-Number-136/"/>
+    <id>http://yoursite.com/2018/04/01/Single-Number-136/</id>
+    <published>2018-04-01T06:58:17.000Z</published>
+    <updated>2018-04-01T07:50:53.443Z</updated>
+    
+    <content type="html"><![CDATA[<h4 id="LeetCode-136-Single-Number"><a href="#LeetCode-136-Single-Number" class="headerlink" title="LeetCode #136 Single Number"></a><a href="https://leetcode.com/problems/single-number/description/" target="_blank" rel="noopener">LeetCode #136 Single Number</a></h4><p>Given an array of integers, every element appears twice except for one. Find that single one.</p><p><strong>Note:</strong><br>Your algorithm should have a linear runtime complexity. Could you implement it without using extra memory?</p><a id="more"></a><h4 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h4><p>最容易想到的解法是利用<code>HashMap</code>，以数组中的数为<code>key</code>，以出现次数为<code>value</code>统计每一个整数出现的次数，然后遍历<code>HashMap</code>，取出出现次数为1的数。这样的话，线性时间就可以找出只出现一次的数字。</p><p>但是题目不仅要求线性时间，还问能不能使用额外的内存。分析一下题目，除了一个整数之外，其他每个整数都是成对出现的。利用计数的方法可以得出每个数字出现的次数，但是这必须要额外的空间。不需要额外空间的方式有两种，一种是修改数组中的元素，以突出唯一的元素；而另一个则是通过运算，使最后的结果等于唯一的数。</p><h5 id="修改数组元素"><a href="#修改数组元素" class="headerlink" title="修改数组元素"></a>修改数组元素</h5><p>要使用这种方法，必须保证不影响遍历的结果，因此这种方法只适用于很少一部分前提条件满足的情况。</p><p>如果这些数字都在[1, (nums.length + 1) / 2]中，我们可以通过对数字对应下标的数字取反的方式来得到只出现一次的数。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">findSingle</span><span class="params">(arary)</span>      <span class="comment">// array is the array of integers</span></span></span><br><span class="line"><span class="function">  <span class="title">if</span> <span class="params">(array.length == <span class="number">0</span>)</span></span></span><br><span class="line"><span class="function">    return -1</span></span><br><span class="line"><span class="function">  <span class="title">if</span> <span class="params">(array.length == <span class="number">1</span>)</span></span></span><br><span class="line"><span class="function">    return array[0]</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">  <span class="comment">// 翻转下标为[n-1]的数字</span></span></span><br><span class="line"><span class="function">  <span class="comment">// 如果[n]出现了两次，那么[n-1]对应的数字最后一定是正数</span></span></span><br><span class="line"><span class="function">  <span class="comment">// 而如果只出现了一次，则为负数</span></span></span><br><span class="line"><span class="function">  <span class="title">for</span> <span class="params">(n in array)</span></span></span><br><span class="line"><span class="function">    tmp </span>= array[n - <span class="number">1</span>]</span><br><span class="line">    tmp = tmp &lt; <span class="number">0</span> ? -tmp : tmp;</span><br><span class="line">    array[tmp - <span class="number">1</span>] = -array[tmp - <span class="number">1</span>]</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 找到唯一的一个负数，其下标+1即为唯一出现一次的整数</span></span><br><span class="line">  <span class="keyword">for</span> (i = <span class="number">0</span>, size = (arary.length + <span class="number">1</span>) &gt;&gt; <span class="number">1</span>; i &lt; size; i++)</span><br><span class="line">    <span class="keyword">if</span> (array[i] &lt; <span class="number">0</span>)</span><br><span class="line">      <span class="keyword">return</span> i + <span class="number">1</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> -<span class="number">1</span></span><br></pre></td></tr></table></figure></p><p>但是这种方案显然只适合于这种数组内元素都是从1到((array.length + 1) / 2)的连续正整数。</p><h5 id="运算"><a href="#运算" class="headerlink" title="运算"></a>运算</h5><p>我们需要找到一种运算最后能够得出唯一出现一次的数。四则运算显然不能满足要求，那么位运算呢？与？或？异或？异或？没错，两个相等的数异或为0，0与一个数异或可以得到该数。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">findSingle</span><span class="params">(array)</span></span></span><br><span class="line"><span class="function">  <span class="title">if</span> <span class="params">(array.length == <span class="number">0</span>)</span></span></span><br><span class="line"><span class="function">    return -1</span></span><br><span class="line"><span class="function">  </span></span><br><span class="line"><span class="function">  result </span>= <span class="number">0</span></span><br><span class="line">  <span class="keyword">for</span> (n in array)</span><br><span class="line">    result ^= n</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> result</span><br></pre></td></tr></table></figure></p><p>简洁而优雅。</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h4 id=&quot;LeetCode-136-Single-Number&quot;&gt;&lt;a href=&quot;#LeetCode-136-Single-Number&quot; class=&quot;headerlink&quot; title=&quot;LeetCode #136 Single Number&quot;&gt;&lt;/a&gt;&lt;a href=&quot;https://leetcode.com/problems/single-number/description/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;LeetCode #136 Single Number&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Given an array of integers, every element appears twice except for one. Find that single one.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt;&lt;br&gt;Your algorithm should have a linear runtime complexity. Could you implement it without using extra memory?&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="算法" scheme="http://yoursite.com/categories/%E7%AE%97%E6%B3%95/"/>
+    
+      <category term="LeetCode" scheme="http://yoursite.com/categories/%E7%AE%97%E6%B3%95/LeetCode/"/>
+    
+      <category term="easy" scheme="http://yoursite.com/categories/%E7%AE%97%E6%B3%95/LeetCode/easy/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>树的遍历</title>
