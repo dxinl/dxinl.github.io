@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2018-04-01T07:50:53.443Z</updated>
+  <updated>2018-04-01T13:42:20.561Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>LeetCode#104. Maximum Depth of Binary Tree</title>
+    <link href="http://yoursite.com/2018/04/01/Max-Depth-Of-BT-104/"/>
+    <id>http://yoursite.com/2018/04/01/Max-Depth-Of-BT-104/</id>
+    <published>2018-04-01T13:33:50.000Z</published>
+    <updated>2018-04-01T13:42:20.561Z</updated>
+    
+    <content type="html"><![CDATA[<p><a href="https://leetcode.com/problems/maximum-depth-of-binary-tree/description/" target="_blank" rel="noopener">LeetCode#104 Maximum Depth of Binary Tree</a></p><p>Given a binary tree, find its maximum depth.</p><p>The maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.</p><h4 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h4><p>这是一道典型的二叉树遍历题目，可以查看之前对于<a href="https://dxinl.github.io/2018/03/31/Tree-traversal/" target="_blank" rel="noopener">“树的遍历”的介绍</a>。可以选择深度优先搜索递归法解决：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">depth</span><span class="params">(node)</span></span></span><br><span class="line"><span class="function">  return <span class="title">depth</span><span class="params">(node, <span class="number">0</span>)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">depth</span><span class="params">(node, depth)</span></span></span><br><span class="line"><span class="function">  <span class="title">if</span> <span class="params">(node = <span class="keyword">null</span>)</span></span></span><br><span class="line"><span class="function">    return depth</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">  depth++</span></span><br><span class="line"><span class="function">  return <span class="title">max</span><span class="params">(depth(node.left, depth)</span>, <span class="title">depth</span><span class="params">(node.right, depth)</span>)</span></span><br></pre></td></tr></table></figure></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;&lt;a href=&quot;https://leetcode.com/problems/maximum-depth-of-binary-tree/description/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;LeetCode#104 Maximum Dep
+      
+    
+    </summary>
+    
+      <category term="算法" scheme="http://yoursite.com/categories/%E7%AE%97%E6%B3%95/"/>
+    
+      <category term="LeetCode" scheme="http://yoursite.com/categories/%E7%AE%97%E6%B3%95/LeetCode/"/>
+    
+      <category term="easy" scheme="http://yoursite.com/categories/%E7%AE%97%E6%B3%95/LeetCode/easy/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>LeetCode#136. Single Number</title>
