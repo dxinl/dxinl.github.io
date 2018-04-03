@@ -94,17 +94,17 @@
 
 
 
-<meta name="description" content="LeetCode#104 Maximum Depth of Binary TreeGiven a binary tree, find its maximum depth. The maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.">
+<meta name="description" content="LeetCode#242 Valid AnagramGiven two strings s and t, write a function to determine if t is an anagram of s. For example,s = “anagram”, t = “nagaram”, return true.s = “rat”, t = “car”, return false. No">
 <meta property="og:type" content="article">
-<meta property="og:title" content="LeetCode#104. Maximum Depth of Binary Tree">
-<meta property="og:url" content="http://yoursite.com/2018/04/01/Max-Depth-Of-BT-104/index.html">
+<meta property="og:title" content="LeetCode#242. Valid Anagram">
+<meta property="og:url" content="http://yoursite.com/2018/04/03/Valid-Anagram-242/index.html">
 <meta property="og:site_name" content="Write down &amp; Think hard">
-<meta property="og:description" content="LeetCode#104 Maximum Depth of Binary TreeGiven a binary tree, find its maximum depth. The maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.">
+<meta property="og:description" content="LeetCode#242 Valid AnagramGiven two strings s and t, write a function to determine if t is an anagram of s. For example,s = “anagram”, t = “nagaram”, return true.s = “rat”, t = “car”, return false. No">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-04-03T11:34:15.743Z">
+<meta property="og:updated_time" content="2018-04-03T14:11:07.663Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="LeetCode#104. Maximum Depth of Binary Tree">
-<meta name="twitter:description" content="LeetCode#104 Maximum Depth of Binary TreeGiven a binary tree, find its maximum depth. The maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.">
+<meta name="twitter:title" content="LeetCode#242. Valid Anagram">
+<meta name="twitter:description" content="LeetCode#242 Valid AnagramGiven two strings s and t, write a function to determine if t is an anagram of s. For example,s = “anagram”, t = “nagaram”, return true.s = “rat”, t = “car”, return false. No">
 
 
 
@@ -133,13 +133,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/04/01/Max-Depth-Of-BT-104/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/04/03/Valid-Anagram-242/"/>
 
 
 
 
 
-  <title>LeetCode#104. Maximum Depth of Binary Tree | Write down & Think hard</title>
+  <title>LeetCode#242. Valid Anagram | Write down & Think hard</title>
   
 
 
@@ -252,7 +252,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/01/Max-Depth-Of-BT-104/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/03/Valid-Anagram-242/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Deng Xinliang">
@@ -269,7 +269,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">LeetCode#104. Maximum Depth of Binary Tree</h1>
+          <h1 class="post-title" itemprop="name headline">LeetCode#242. Valid Anagram</h1>
         
 
         <div class="post-meta">
@@ -281,8 +281,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-01T21:33:50+08:00">
-                2018-04-01
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-03T22:00:40+08:00">
+                2018-04-03
               </time>
             
 
@@ -363,9 +363,10 @@
       
 
       
-        <h4 id="LeetCode-104-Maximum-Depth-of-Binary-Tree"><a href="#LeetCode-104-Maximum-Depth-of-Binary-Tree" class="headerlink" title="LeetCode#104 Maximum Depth of Binary Tree"></a><a href="https://leetcode.com/problems/maximum-depth-of-binary-tree/description/" target="_blank" rel="noopener">LeetCode#104 Maximum Depth of Binary Tree</a></h4><p>Given a binary tree, find its maximum depth.</p>
-<p>The maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.</p>
-<h4 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h4><p>这是一道典型的二叉树遍历题目，可以查看之前对于<a href="https://dxinl.github.io/2018/03/31/Tree-traversal/" target="_blank" rel="noopener">“树的遍历”的介绍</a>。可以选择深度优先搜索递归法解决：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">depth</span><span class="params">(node)</span></span></span><br><span class="line"><span class="function">  return <span class="title">depth</span><span class="params">(node, <span class="number">0</span>)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">depth</span><span class="params">(node, depth)</span></span></span><br><span class="line"><span class="function">  <span class="title">if</span> <span class="params">(node = <span class="keyword">null</span>)</span></span></span><br><span class="line"><span class="function">    return depth</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">  depth++</span></span><br><span class="line"><span class="function">  return <span class="title">max</span><span class="params">(depth(node.left, depth)</span>, <span class="title">depth</span><span class="params">(node.right, depth)</span>)</span></span><br></pre></td></tr></table></figure></p>
+        <h4 id="LeetCode-242-Valid-Anagram"><a href="#LeetCode-242-Valid-Anagram" class="headerlink" title="LeetCode#242 Valid Anagram"></a><a href="https://leetcode.com/problems/valid-anagram/description/" target="_blank" rel="noopener">LeetCode#242 Valid Anagram</a></h4><p>Given two strings s and t, write a function to determine if t is an anagram of s.</p>
+<p>For example,<br>s = “anagram”, t = “nagaram”, return true.<br>s = “rat”, t = “car”, return false.</p>
+<p><strong>Note:</strong><br>You may assume the string contains only lowercase alphabets.</p>
+<h4 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h4><p>既然只有小写字母，那就可以通过一个长度为26的数组记录第一个字符串中的字符出现的次数，再通过遍历第二个字符串并做减法，如果某个字符对应的次数小于0，则说明两个字符串不是变位词。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">isAnagram</span><span class="params">(s1, s2)</span></span></span><br><span class="line"><span class="function">  count </span>= <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">26</span>]</span><br><span class="line">  <span class="keyword">for</span> (c in s1)</span><br><span class="line">    count[c - <span class="string">'a'</span>]++</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (c in s2)</span><br><span class="line">    <span class="keyword">if</span> (count[c - <span class="string">'a'</span>]-- == <span class="number">0</span>)</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">false</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">true</span></span><br></pre></td></tr></table></figure></p>
 
       
     </div>
@@ -390,8 +391,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/04/01/Single-Number-136/" rel="next" title="LeetCode#136. Single Number">
-                <i class="fa fa-chevron-left"></i> LeetCode#136. Single Number
+              <a href="/2018/04/03/Majority-Element-169/" rel="next" title="LeetCode#169. Majority Element">
+                <i class="fa fa-chevron-left"></i> LeetCode#169. Majority Element
               </a>
             
           </div>
@@ -399,10 +400,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/04/03/Sum-of-Two-Integers-371/" rel="prev" title="LeetCode#371. Sum of Two Integers">
-                LeetCode#371. Sum of Two Integers <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -527,7 +524,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#LeetCode-104-Maximum-Depth-of-Binary-Tree"><span class="nav-number">1.</span> <span class="nav-text">LeetCode#104 Maximum Depth of Binary Tree</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#分析"><span class="nav-number">2.</span> <span class="nav-text">分析</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#LeetCode-242-Valid-Anagram"><span class="nav-number">1.</span> <span class="nav-text">LeetCode#242 Valid Anagram</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#分析"><span class="nav-number">2.</span> <span class="nav-text">分析</span></a></li></ol></div>
             
 
           </div>

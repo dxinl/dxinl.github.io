@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2018-04-03T13:48:12.863Z</updated>
+  <updated>2018-04-03T14:11:07.663Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>LeetCode#242. Valid Anagram</title>
+    <link href="http://yoursite.com/2018/04/03/Valid-Anagram-242/"/>
+    <id>http://yoursite.com/2018/04/03/Valid-Anagram-242/</id>
+    <published>2018-04-03T14:00:40.000Z</published>
+    <updated>2018-04-03T14:11:07.663Z</updated>
+    
+    <content type="html"><![CDATA[<h4 id="LeetCode-242-Valid-Anagram"><a href="#LeetCode-242-Valid-Anagram" class="headerlink" title="LeetCode#242 Valid Anagram"></a><a href="https://leetcode.com/problems/valid-anagram/description/" target="_blank" rel="noopener">LeetCode#242 Valid Anagram</a></h4><p>Given two strings s and t, write a function to determine if t is an anagram of s.</p><p>For example,<br>s = “anagram”, t = “nagaram”, return true.<br>s = “rat”, t = “car”, return false.</p><p><strong>Note:</strong><br>You may assume the string contains only lowercase alphabets.</p><h4 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h4><p>既然只有小写字母，那就可以通过一个长度为26的数组记录第一个字符串中的字符出现的次数，再通过遍历第二个字符串并做减法，如果某个字符对应的次数小于0，则说明两个字符串不是变位词。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">isAnagram</span><span class="params">(s1, s2)</span></span></span><br><span class="line"><span class="function">  count </span>= <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">26</span>]</span><br><span class="line">  <span class="keyword">for</span> (c in s1)</span><br><span class="line">    count[c - <span class="string">'a'</span>]++</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (c in s2)</span><br><span class="line">    <span class="keyword">if</span> (count[c - <span class="string">'a'</span>]-- == <span class="number">0</span>)</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">false</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">true</span></span><br></pre></td></tr></table></figure></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h4 id=&quot;LeetCode-242-Valid-Anagram&quot;&gt;&lt;a href=&quot;#LeetCode-242-Valid-Anagram&quot; class=&quot;headerlink&quot; title=&quot;LeetCode#242 Valid Anagram&quot;&gt;&lt;/a&gt;&lt;a href=
+      
+    
+    </summary>
+    
+      <category term="算法" scheme="http://yoursite.com/categories/%E7%AE%97%E6%B3%95/"/>
+    
+      <category term="LeetCode" scheme="http://yoursite.com/categories/%E7%AE%97%E6%B3%95/LeetCode/"/>
+    
+      <category term="easy" scheme="http://yoursite.com/categories/%E7%AE%97%E6%B3%95/LeetCode/easy/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>LeetCode#169. Majority Element</title>
