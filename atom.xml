@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2018-04-03T12:36:01.465Z</updated>
+  <updated>2018-04-03T13:48:12.863Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -17,13 +17,40 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>LeetCode#371 Sum of Two Integers</title>
+    <title>LeetCode#169. Majority Element</title>
+    <link href="http://yoursite.com/2018/04/03/Majority-Element-169/"/>
+    <id>http://yoursite.com/2018/04/03/Majority-Element-169/</id>
+    <published>2018-04-03T13:24:42.000Z</published>
+    <updated>2018-04-03T13:48:12.863Z</updated>
+    
+    <content type="html"><![CDATA[<h4 id="LeetCode-169-Majority-Element"><a href="#LeetCode-169-Majority-Element" class="headerlink" title="LeetCode#169 Majority Element"></a><a href="https://leetcode.com/problems/majority-element/description/" target="_blank" rel="noopener">LeetCode#169 Majority Element</a></h4><p>Given an array of size n, find the majority element. The majority element is the element that appears more than <code>[n/2]</code> times.</p><p>You may assume that the array is non-empty and the majority element always exist in the array.</p><h4 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h4><p>这道题很简单，可以先排序，中间的数就是答案。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">majority</span><span class="params">(nums)</span>  <span class="comment">// nums is a integer array</span></span></span><br><span class="line"><span class="function">  <span class="title">sort</span><span class="params">(nums)</span></span></span><br><span class="line"><span class="function">  return nums[nums.length / 2]</span></span><br></pre></td></tr></table></figure></p><h4 id="只有想不到"><a href="#只有想不到" class="headerlink" title="只有想不到"></a>只有想不到</h4><a id="more"></a><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">majority</span><span class="params">(nums)</span></span></span><br><span class="line"><span class="function">  target </span>= <span class="number">0</span>;</span><br><span class="line">  count = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">for</span> (n in nums)</span><br><span class="line">    <span class="keyword">if</span> (count = <span class="number">0</span>)</span><br><span class="line">      target = n</span><br><span class="line">      count++</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (target = n)</span><br><span class="line">      count++</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">      count--</span><br><span class="line">  <span class="keyword">return</span> target</span><br></pre></td></tr></table></figure><p>如果我们用一个数字<code>count</code>记录一个数<code>target</code>出现的次数，如果下一个数还是这个数就将<code>count</code>加<code>1</code>，否则减<code>1</code>。如果<code>count</code>为<code>0</code>，就以下一个数为<code>target</code>并重新开始计算<code>count</code>。最后输出<code>target</code>。因为目标数字出现次数超过一半，其他数字的<code>count</code>最后肯定会减至<code>0</code>。那么循环结束后的<code>target</code>就是答案。</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h4 id=&quot;LeetCode-169-Majority-Element&quot;&gt;&lt;a href=&quot;#LeetCode-169-Majority-Element&quot; class=&quot;headerlink&quot; title=&quot;LeetCode#169 Majority Element&quot;&gt;&lt;/a&gt;&lt;a href=&quot;https://leetcode.com/problems/majority-element/description/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;LeetCode#169 Majority Element&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Given an array of size n, find the majority element. The majority element is the element that appears more than &lt;code&gt;[n/2]&lt;/code&gt; times.&lt;/p&gt;
+&lt;p&gt;You may assume that the array is non-empty and the majority element always exist in the array.&lt;/p&gt;
+&lt;h4 id=&quot;分析&quot;&gt;&lt;a href=&quot;#分析&quot; class=&quot;headerlink&quot; title=&quot;分析&quot;&gt;&lt;/a&gt;分析&lt;/h4&gt;&lt;p&gt;这道题很简单，可以先排序，中间的数就是答案。&lt;br&gt;&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;majority&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(nums)&lt;/span&gt;  &lt;span class=&quot;comment&quot;&gt;// nums is a integer array&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;  &lt;span class=&quot;title&quot;&gt;sort&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(nums)&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;  return nums[nums.length / 2]&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;h4 id=&quot;只有想不到&quot;&gt;&lt;a href=&quot;#只有想不到&quot; class=&quot;headerlink&quot; title=&quot;只有想不到&quot;&gt;&lt;/a&gt;只有想不到&lt;/h4&gt;
+    
+    </summary>
+    
+      <category term="算法" scheme="http://yoursite.com/categories/%E7%AE%97%E6%B3%95/"/>
+    
+      <category term="LeetCode" scheme="http://yoursite.com/categories/%E7%AE%97%E6%B3%95/LeetCode/"/>
+    
+      <category term="easy" scheme="http://yoursite.com/categories/%E7%AE%97%E6%B3%95/LeetCode/easy/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>LeetCode#371. Sum of Two Integers</title>
     <link href="http://yoursite.com/2018/04/03/Sum-of-Two-Integers-371/"/>
     <id>http://yoursite.com/2018/04/03/Sum-of-Two-Integers-371/</id>
     <published>2018-04-03T11:34:10.000Z</published>
-    <updated>2018-04-03T12:36:01.465Z</updated>
+    <updated>2018-04-03T13:28:24.459Z</updated>
     
-    <content type="html"><![CDATA[<h4 id="LeetCode-371-Sum-of-Two-Integers"><a href="#LeetCode-371-Sum-of-Two-Integers" class="headerlink" title="LeetCode#371 Sum of Two Integers"></a><a href="https://leetcode.com/problems/sum-of-two-integers/description/" target="_blank" rel="noopener">LeetCode#371 Sum of Two Integers</a></h4><p>Calculate the sum of two integers a and b, but you are not allowed to use the operator <code>+</code> and <code>-</code>.</p><p>Example:<br>Given _a_ = 1 and _b_ = 2, return 3.</p><p>按照题目的要求，不能使用<code>+</code>和<code>-</code>，那只能使用位运算了。这样的话，很容易就能想到使用<code>&amp;</code>来进行计算，通过计算两个数每一位的与，以及下一位与的结果，就可以知道当前位的值。但是由于不能用<code>+</code>，所以即使计算出了结果的每一位，也没办法计算出最后的值。</p><p>既然<code>&amp;</code>可以计算出进位，那么是否有其他的位运算可以计算出当前位的值？那就是<code>^</code>了。通过异或计算出的值是不含进位的，因此在异或之后需要和进位结果再异或一次，以得出新的值。但是这次计算又可能产生新的进位，因此需要循环直到不再含有进位。代码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">getSum</span><span class="params">(a, b)</span></span></span><br><span class="line"><span class="function">  <span class="title">while</span> <span class="params">(b != <span class="number">0</span>)</span></span></span><br><span class="line"><span class="function">  carry </span>= a &amp; b    <span class="comment">// 计算出需要进位的位</span></span><br><span class="line">  a = a ^ b</span><br><span class="line">  b = carry &lt;&lt; <span class="number">1</span>   <span class="comment">// 左移一位即可得出进位结果</span></span><br></pre></td></tr></table></figure></p>]]></content>
+    <content type="html"><![CDATA[<h4 id="LeetCode-371-Sum-of-Two-Integers"><a href="#LeetCode-371-Sum-of-Two-Integers" class="headerlink" title="LeetCode#371 Sum of Two Integers"></a><a href="https://leetcode.com/problems/sum-of-two-integers/description/" target="_blank" rel="noopener">LeetCode#371 Sum of Two Integers</a></h4><p>Calculate the sum of two integers a and b, but you are not allowed to use the operator <code>+</code> and <code>-</code>.</p><p>Example:<br>Given _a_ = 1 and _b_ = 2, return 3.</p><h4 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h4><p>按照题目的要求，不能使用<code>+</code>和<code>-</code>，那只能使用位运算了。这样的话，很容易就能想到使用<code>&amp;</code>来进行计算，通过计算两个数每一位的与，以及下一位与的结果，就可以知道当前位的值。但是由于不能用<code>+</code>，所以即使计算出了结果的每一位，也没办法计算出最后的值。</p><p>既然<code>&amp;</code>可以计算出进位，那么是否有其他的位运算可以计算出当前位的值？那就是<code>^</code>了。通过异或计算出的值是不含进位的，因此在异或之后需要和进位结果再异或一次，以得出新的值。但是这次计算又可能产生新的进位，因此需要循环直到不再含有进位。代码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">getSum</span><span class="params">(a, b)</span></span></span><br><span class="line"><span class="function">  <span class="title">while</span> <span class="params">(b != <span class="number">0</span>)</span></span></span><br><span class="line"><span class="function">  carry </span>= a &amp; b    <span class="comment">// 计算出需要进位的位</span></span><br><span class="line">  a = a ^ b</span><br><span class="line">  b = carry &lt;&lt; <span class="number">1</span>   <span class="comment">// 左移一位即可得出进位结果</span></span><br></pre></td></tr></table></figure></p>]]></content>
     
     <summary type="html">
     
