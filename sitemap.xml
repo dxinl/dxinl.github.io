@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://yoursite.com/2018/04/11/Number-of-Islands-200/</loc>
+    
+    <lastmod>2018-04-11T15:03:23.475Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://yoursite.com/2018/04/05/Merge-Intervals-56/</loc>
     
     <lastmod>2018-04-10T15:33:32.476Z</lastmod>
