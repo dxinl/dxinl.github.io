@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/avatar.jpg?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="这是一道hard的题目，在此之前，先看与之类似的easy的题目： LeetCode#21 Merge Two Sorted ListsMerge two sorted linked lists and return it as a new list. The new list should be made by splicing together the nodes of the first tw">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LeetCode#23. Merge k Sorted Lists">
+<meta property="og:url" content="http://yoursite.com/2018/04/19/Merge-K-Sorted-Lists-23/index.html">
+<meta property="og:site_name" content="Write down &amp; Think hard">
+<meta property="og:description" content="这是一道hard的题目，在此之前，先看与之类似的easy的题目： LeetCode#21 Merge Two Sorted ListsMerge two sorted linked lists and return it as a new list. The new list should be made by splicing together the nodes of the first tw">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-04-21T07:55:05.461Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="LeetCode#23. Merge k Sorted Lists">
+<meta name="twitter:description" content="这是一道hard的题目，在此之前，先看与之类似的easy的题目： LeetCode#21 Merge Two Sorted ListsMerge two sorted linked lists and return it as a new list. The new list should be made by splicing together the nodes of the first tw">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"hide","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/04/19/Merge-K-Sorted-Lists-23/"/>
+
+
+
+
+
+  <title>LeetCode#23. Merge k Sorted Lists | Write down & Think hard</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Write down & Think hard</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/19/Merge-K-Sorted-Lists-23/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Deng Xinliang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Write down & Think hard">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">LeetCode#23. Merge k Sorted Lists</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-19T23:28:24+08:00">
+                2018-04-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/算法/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/算法/LeetCode/" itemprop="url" rel="index">
+                    <span itemprop="name">LeetCode</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/算法/LeetCode/hard/" itemprop="url" rel="index">
+                    <span itemprop="name">hard</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这是一道hard的题目，在此之前，先看与之类似的easy的题目：</p>
+<h4 id="LeetCode-21-Merge-Two-Sorted-Lists"><a href="#LeetCode-21-Merge-Two-Sorted-Lists" class="headerlink" title="LeetCode#21 Merge Two Sorted Lists"></a><a href="https://leetcode.com/problems/merge-two-sorted-lists/description/" target="_blank" rel="noopener">LeetCode#21 Merge Two Sorted Lists</a></h4><p>Merge two sorted linked lists and return it as a new list. The new list should be made by splicing together the nodes of the first two lists.</p>
+<p><strong>Example:</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Input: 1-&gt;2-&gt;4, 1-&gt;3-&gt;4</span><br><span class="line">Output: 1-&gt;1-&gt;2-&gt;3-&gt;4-&gt;4</span><br></pre></td></tr></table></figure></p>
+<p>合并两个已排序的链表，非常简单，分别从头开始遍历，并对比，将小的数添加到前面即可。如下：<br><a id="more"></a><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Struct ListNode &#123;</span></span><br><span class="line"><span class="comment"> *     int val;</span></span><br><span class="line"><span class="comment"> *     ListNode next;</span></span><br><span class="line"><span class="comment"> *     ListNode(int x) &#123; val = x; &#125;</span></span><br><span class="line"><span class="comment"> * &#125;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function">ListNode <span class="title">mergeTwoLists</span><span class="params">(l1, l2)</span>  <span class="comment">// l1/l2分别是两个链表的当前节点</span></span></span><br><span class="line"><span class="function">  <span class="title">if</span> <span class="params">(l1 = <span class="keyword">null</span>)</span></span></span><br><span class="line"><span class="function">    return l2</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">  <span class="title">if</span> <span class="params">(l2 = <span class="keyword">null</span>)</span></span></span><br><span class="line"><span class="function">    return l1</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">  <span class="comment">// 通过递归拼接链表</span></span></span><br><span class="line"><span class="function">  <span class="comment">// 两个链表的当前节点小的要不就是合并后的头结点，</span></span></span><br><span class="line"><span class="function">  <span class="comment">// 要不就已经拼接到之前的节点中，所以只需将小节点的next与大节点对比</span></span></span><br><span class="line"><span class="function">  <span class="comment">// 就可以得到当前小节点的下一个节点，以此类推就可以合并两条链表。</span></span></span><br><span class="line"><span class="function">  <span class="comment">// 因此使用递归就可以解决这个问题。</span></span></span><br><span class="line"><span class="function">  <span class="title">if</span> <span class="params">(l1.val &lt; l2.val)</span></span></span><br><span class="line"><span class="function">    l1.next </span>= mergeTwoLists(l1.next, l2)</span><br><span class="line">    <span class="keyword">return</span> l1</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    l2.next = mergeTwoLists(l1, l2.next)</span><br><span class="line">    <span class="keyword">return</span> l2</span><br></pre></td></tr></table></figure></p>
+<h4 id="LeetCode-23-Merge-k-Sorted-Lists"><a href="#LeetCode-23-Merge-k-Sorted-Lists" class="headerlink" title="LeetCode#23 Merge k Sorted Lists"></a><a href="https://leetcode.com/problems/merge-k-sorted-lists/description/" target="_blank" rel="noopener">LeetCode#23 Merge k Sorted Lists</a></h4><p>Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity.</p>
+<p><strong>Example:</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Input:</span><br><span class="line">[</span><br><span class="line">  1-&gt;4-&gt;5,</span><br><span class="line">  1-&gt;3-&gt;4,</span><br><span class="line">  2-&gt;6</span><br><span class="line">]</span><br><span class="line">Output: 1-&gt;1-&gt;2-&gt;3-&gt;4-&gt;4-&gt;5-&gt;6</span><br></pre></td></tr></table></figure></p>
+<p>上一道题是合并两个链表，这道题是合并k个链表。如果逐个合并的话，每个链表的节点要访问k次，那么时间复杂度会达到<strong>O(n<sup>2</sup>)</strong>，这个思路会超时，需要换一种方式来完成。</p>
+<p>如果熟悉归并排序的话，很容易就能想到，将多个一排序的链表合并在一起，不就是跟归并排序的合并过程一致吗？而我们知道，归并排序的每个节点只会访问<strong>log<sub>2</sub>n</strong>。如下图：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">=====  =====  =====  =====</span><br><span class="line">| 1 |  | 3 |  | 2 |  | 4 |</span><br><span class="line">=====  =====  =====  =====</span><br><span class="line">  |      |      |      |</span><br><span class="line">  └──────┘      └──────┘</span><br><span class="line">      |             |</span><br><span class="line">  =========     =========</span><br><span class="line">  | 1 | 3 |     | 2 | 4 |</span><br><span class="line">  =========     =========</span><br><span class="line">      |             |</span><br><span class="line">      └─────────────┘</span><br><span class="line">              |</span><br><span class="line">      =================</span><br><span class="line">      | 1 | 2 | 3 | 4 |</span><br><span class="line">      =================</span><br></pre></td></tr></table></figure></p>
+<p>可以看到，以<code>1</code>为例，它只与<code>2</code>和<code>3</code>分别对比了一次，对比次数是2（<strong>log<sub>2</sub>n</strong>）。虽然<code>3</code>的比较次数多于2，但是<code>4</code>的对比次数又少于2，其平均值仍是2。实际上，不管n有多大，每一个数的平均访问次数都是<strong>log<sub>2</sub>n</strong>。因此，将k个链表两两合并，再两两合并，直到只剩下一个链表，这个链表就是答案。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">ListNode <span class="title">mergeKLists</span><span class="params">(lists)</span>  <span class="comment">// lists是一个数组，包含所有要合并的链表</span></span></span><br><span class="line"><span class="function">  size </span>= lists.length</span><br><span class="line">  <span class="keyword">if</span> (size = <span class="number">0</span>)</span><br><span class="line">    reutrn <span class="keyword">null</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span> (size &gt; <span class="number">1</span>)</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; size; i++)</span><br><span class="line">      first = i &lt;&lt; <span class="number">1</span></span><br><span class="line">      second = i + <span class="number">1</span></span><br><span class="line">      <span class="keyword">if</span> (first &lt; size &amp;&amp; second &lt; size)</span><br><span class="line">        l1 = lists[first]                <span class="comment">// l1是第一个链表的头结点</span></span><br><span class="line">        l2 = lists[second]               <span class="comment">// l2是第二个链表的头结点</span></span><br><span class="line">        lists[i] = mergeTwoLists(l1, l2) <span class="comment">// 合并两个链表，并放到数组中</span></span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">        <span class="comment">// 如果只有单数个链表，那最后一个暂不需合并</span></span><br><span class="line">        <span class="keyword">if</span> (first &lt; size)</span><br><span class="line">          lists[i] = lists[first]</span><br><span class="line">          size = i + <span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">          size = i</span><br><span class="line"></span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 剩下的第一个链表就是答案</span></span><br><span class="line">  <span class="keyword">return</span> lists[<span class="number">0</span>]</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/11/Number-of-Islands-200/" rel="next" title="LeetCode#200. Number of Islands">
+                <i class="fa fa-chevron-left"></i> LeetCode#200. Number of Islands
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="Deng Xinliang" />
+          <p class="site-author-name" itemprop="name">Deng Xinliang</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#LeetCode-21-Merge-Two-Sorted-Lists"><span class="nav-number">1.</span> <span class="nav-text">LeetCode#21 Merge Two Sorted Lists</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LeetCode-23-Merge-k-Sorted-Lists"><span class="nav-number">2.</span> <span class="nav-text">LeetCode#23 Merge k Sorted Lists</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Deng Xinliang</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
